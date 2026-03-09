@@ -3,28 +3,142 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
+enum BookingStatus {
+  pending
+  pending_verification
+  confirmed
+  rejected
+  cancelled
 }
 
-model PaymentRequest {
-  id                String        @id @default(uuid())
-  customerName      String
-  customerPhone     String
-  customerEmail     String
-  ticketType        String
-  amount            Int
-  paymentStatus     PaymentStatus @default(PENDING)
-  razorpayOrderId   String?       @unique
-  razorpayPaymentId String?       @unique
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+enum UserRole {
+  SUPER_ADMIN
+  TENANT_ADMIN
+}
 
+model Tenant {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  upiId       String   // Merchant VPA
+  upiName     String   // Merchant Name
+  tagline     String?  // Short bio/motto
+  brandColor  String   @default("#4F46E5") // Indigo 600
+  logoUrl     String?  // CDN link to logo
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  events      Event[]
+  members     Member[]
+  bookings    Booking[]
+
+  @@index([slug])
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  role         UserRole  @default(TENANT_ADMIN)
+  createdAt    DateTime  @default(now())
+
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id])
+
+  @@index([email])
+  @@index([tenantId])
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  venue       String
+  price       Int
+  capacity    Int       @default(0)
+  category    String    @default("general")
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  bookings    Booking[]
+
+  @@index([tenantId])
+  @@index([date])
+  @@index([isActive])
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  orderId   String        @unique
+  name      String
+  phone     String
+  email     String
+  amount    Int
+  utr       String?
+  status    BookingStatus @default(pending)
+  checkedInAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id])
+  
+  memberId  String?
+  member    Member?       @relation(fields: [memberId], references: [id])
+
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([eventId])
+  @@index([memberId])
+  @@index([status])
   @@index([createdAt])
+}
+
+model Member {
+  id           String    @id @default(uuid())
+  name         String
+  phone        String
+  email        String
+  passwordHash String
+  createdAt    DateTime  @default(now())
+
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id])
+  bookings     Booking[]
+  notifications Notification[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, phone])
+  @@index([email])
+  @@index([tenantId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   @default("info") // info, success, warning
+  createdAt DateTime @default(now())
+
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id])
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([memberId])
+  @@index([tenantId])
+  @@index([isRead])
 }

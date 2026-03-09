@@ -1,6 +1,6 @@
-# Manual Payment Collection System
+# UPI QR Payment Collection System
 
-Next.js (App Router) + Prisma + PostgreSQL + Razorpay + TailwindCSS setup for collecting manual ticket payments.
+Next.js (App Router) + Prisma + PostgreSQL + UPI QR + TailwindCSS setup for collecting payments and verifying UTR.
 
 ## 1. Setup
 
@@ -12,9 +12,8 @@ cp .env.example .env
 Update `.env` values:
 
 - `DATABASE_URL`
-- `RAZORPAY_KEY_ID`
-- `RAZORPAY_KEY_SECRET`
-- `RAZORPAY_WEBHOOK_SECRET`
+- `UPI_ID`
+- `UPI_BUSINESS_NAME`
 
 ## 2. Prisma
 
@@ -31,24 +30,12 @@ npm run dev
 
 ## Routes
 
-- `/admin/create-payment` - create payment request
-- `/pay/[paymentId]` - customer payment page
-- `/payment-success` - payment success details
+- `/pay` - user form to create payment request
+- `/pay/[orderId]` - QR + UPI link + UTR submission
 - `/admin/payments` - admin payments table
-- `POST /api/payment/create`
-- `POST /api/payment/verify`
-- `POST /api/webhook/razorpay`
-
-## Razorpay Webhook
-
-Configure webhook URL:
-
-`https://<your-domain>/api/webhook/razorpay`
-
-Enable events:
-
-- `payment.captured`
-- `payment.failed`
+- `POST /api/create-payment`
+- `POST /api/submit-utr`
+- `POST /api/admin/verify-payment`
 
 . In India, solid alternatives to Razorpay are:
 
