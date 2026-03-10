@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../lib/generated/client"
 }
 
 datasource db {
@@ -38,6 +39,7 @@ model Tenant {
   events      Event[]
   members     Member[]
   bookings    Booking[]
+  notifications Notification[]
 
   @@index([slug])
 }

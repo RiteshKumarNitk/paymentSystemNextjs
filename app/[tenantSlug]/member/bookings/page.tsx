@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getLoggedInMemberBySlug } from "@/lib/member";
 import { notFound, redirect } from "next/navigation";
-import MemberLogoutButton from "@/app/member/payments/MemberLogoutButton"; // Move this later
+import MemberLogoutButton from "@/components/member/MemberLogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +27,7 @@ export default async function TenantMemberBookingsPage({
     });
 
     // 3. Fetch notifications
-    const notifications = await (prisma as any).notification.findMany({
+    const notifications = await prisma.notification.findMany({
         where: { memberId: member.id, tenantId: member.tenantId },
         orderBy: { createdAt: "desc" },
         take: 5

@@ -8,19 +8,39 @@ export async function POST(
 ) {
     try {
         const { tenantSlug } = await params;
-        const { email, password } = await request.json();
+        const body = await request.json();
+        const email = body.email?.trim().toLowerCase();
+        const password = body.password?.trim();
+
+        if (!email || !password) {
+            return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+        }
 
         // 1. Fetch User and verify they belong to THIS tenant
-        const user = await prisma.user.findFirst({
-            where: {
-                email,
-                tenant: { slug: tenantSlug }
-            },
+        console.log(`[AUTH] Attempting login for ${email} at tenant ${tenantSlug}`);
+
+        // Find user globally first to see if they even exist
+        const globalUser = await (prisma as any).user.findUnique({
+            where: { email },
+            include: { tenant: true }
         });
 
-        if (!user || user.role !== "TENANT_ADMIN") {
-            return NextResponse.json({ error: "Invalid credentials for this organization" }, { status: 401 });
+        if (!globalUser) {
+            console.log(`[AUTH] User ${email} not found in database.`);
+            return NextResponse.json({ error: "User profile not found" }, { status: 401 });
         }
+
+        if (globalUser.role !== "TENANT_ADMIN") {
+            console.log(`[AUTH] User ${email} is not a Tenant Admin. Role: ${globalUser.role}`);
+            return NextResponse.json({ error: "Unauthorized: Individual lacks administrative privileges" }, { status: 403 });
+        }
+
+        if (globalUser.tenant?.slug?.toLowerCase() !== tenantSlug.toLowerCase()) {
+            console.log(`[AUTH] User ${email} belongs to ${globalUser.tenant?.slug} but tried to access ${tenantSlug}`);
+            return NextResponse.json({ error: "Unauthorized: Access denied for this organization hub" }, { status: 403 });
+        }
+
+        const user = globalUser;
 
         // 2. Verify Password
         const passwordMatch = await bcrypt.compare(password, user.passwordHash);

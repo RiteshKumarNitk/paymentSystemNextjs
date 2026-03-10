@@ -19,12 +19,14 @@ export function middleware(request: NextRequest) {
 
     // 2. Handle Super Admin Protection
     if (pathname.startsWith("/super")) {
+        // ALLOW /super/login to be accessed without token
+        if (pathname === "/super/login") return NextResponse.next();
+
         const token = request.cookies.get("super_token")?.value;
-        const expected = process.env.ADMIN_PASSWORD; // Using SAME password for super admin for now
+        const expected = process.env.ADMIN_PASSWORD || "admin123";
         if (!token || token !== expected) {
             return NextResponse.redirect(new URL("/super/login", request.url));
         }
-        return NextResponse.next();
     }
 
     // 3. Resolve Tenant Context
@@ -33,6 +35,12 @@ export function middleware(request: NextRequest) {
     if (segments.length === 0) return NextResponse.next(); // Home page
 
     const tenantSlug = segments[0];
+
+    // RESTRICT: Prevent system keywords from being treated as tenants
+    const RESERVED_KEYWORDS = ["admin", "super", "api", "member", "events", "forms", "pay"];
+    if (RESERVED_KEYWORDS.includes(tenantSlug)) {
+        return NextResponse.next();
+    }
 
     // 4. Tenant Admin Protection
     // Path pattern: /[tenant-slug]/admin/...

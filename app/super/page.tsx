@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import AdminLogout from "../admin/AdminLogout"; // Reusing for now or create SuperLogout
+import Link from "next/link";
+import SuperLogout from "@/components/super/SuperLogout";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +22,15 @@ export default async function SuperDashboardPage() {
         <main className="mx-auto min-h-screen max-w-6xl px-4 py-8">
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900">🌍 Global Workspace</h1>
-                    <p className="text-slate-500 text-sm">Super Admin Control Panel</p>
+                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">🌍 Global Workspace</h1>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Platform-Wide Control Panel</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
                     <Link href="/super/tenants/new"
-                        className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg transition hover:bg-indigo-700">
-                        + New Tenant
+                        className="rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-100 transition hover:bg-indigo-700 active:scale-95">
+                        + New Organization
                     </Link>
-                    <AdminLogout />
+                    <SuperLogout />
                 </div>
             </div>
 

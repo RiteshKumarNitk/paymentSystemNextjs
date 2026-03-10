@@ -25,8 +25,10 @@ export default async function MarketplacePage() {
             <span className="text-xl font-black tracking-tight">EventPass</span>
           </Link>
           <div className="flex items-center gap-6 text-sm font-bold uppercase tracking-widest text-slate-400">
-            <Link href="/super/login" className="hover:text-indigo-600 transition">Partners</Link>
-            <Link href="/super/login" className="rounded-full bg-slate-900 px-6 py-2.5 text-white hover:bg-slate-800 transition">Host Event</Link>
+            <Link href="/super/login" className="hover:text-indigo-600 transition">For Partners</Link>
+            <Link href="/super/login" className="rounded-full bg-slate-900 px-6 py-2.5 text-white hover:bg-slate-800 transition shadow-xl shadow-slate-200">
+              Host Your Event
+            </Link>
           </div>
         </div>
       </nav>
