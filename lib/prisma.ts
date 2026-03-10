@@ -1,15 +1,14 @@
 import { PrismaClient } from "./generated/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: any;
 };
 
-// FORCE REFRESH: In development, we must clear the global instance 
-// to ensure the latest generated client (lib/generated/client) is used.
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = undefined;
-}
+const prismaClient = new PrismaClient({
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+});
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+export const prisma = globalForPrisma.prisma || prismaClient.$extends(withAccelerate());
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
