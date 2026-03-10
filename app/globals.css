@@ -1,7 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-slate-50 text-slate-900;
+:root {
+  --primary: #F05A44;
+  --primary-hover: #D94833;
+  --slate-900: #0F172A;
+  --slate-800: #1E293B;
+  --slate-600: #475569;
+  --slate-400: #94A3B8;
+  --slate-50: #F8FAFC;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .wowsly-card {
+    @apply bg-white border border-slate-100 shadow-sm transition-all duration-300;
+    border-radius: 24px;
+  }
+
+  .wowsly-card:hover {
+    @apply shadow-xl -translate-y-1;
+    border-color: rgba(240, 90, 68, 0.1);
+  }
+
+  .pill-button {
+    @apply rounded-full px-8 py-4 font-bold uppercase tracking-wider text-sm transition-all duration-300 flex items-center justify-center gap-2;
+  }
+
+  .pill-button-primary {
+    background-color: var(--primary);
+    @apply text-white shadow-lg shadow-red-500/20;
+  }
+
+  .pill-button-primary:hover {
+    background-color: var(--primary-hover);
+    @apply shadow-red-500/40 -translate-y-0.5;
+  }
+
+  .glass-header {
+    @apply sticky top-0 z-50 transition-all duration-300;
+    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.8);
+  }
 }
