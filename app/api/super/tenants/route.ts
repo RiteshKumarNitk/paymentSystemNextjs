@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         // 5. Create Tenant and Admin in a transaction
         const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             const tenant = await tx.tenant.create({
                 data: {
                     name,

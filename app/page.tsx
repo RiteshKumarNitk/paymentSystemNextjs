@@ -109,7 +109,7 @@ export default async function MarketplacePage() {
         </div>
 
         <div className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
-          {tenants.map(tenant => (
+          {tenants.map((tenant: any) => (
             <Link key={tenant.id} href={`/${tenant.slug}`} className="wowsly-card p-12 group block !rounded-[3.5rem]">
               <div className="mb-12 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-slate-50 overflow-hidden shadow-inner group-hover:scale-110 transition-transform duration-500">
                 {tenant.logoUrl ? (

@@ -86,7 +86,7 @@ export default async function TenantEventDetailPage({
 
                         <div className="prose max-w-none text-slate-600 leading-relaxed font-medium">
                             <h3 className="text-slate-900 font-black text-xl mb-4">About this event</h3>
-                            {event.description.split('\n').map((para, i) => (
+                            {event.description.split('\n').map((para: string, i: number) => (
                                 <p key={i} className="mb-4 whitespace-pre-wrap">{para}</p>
                             ))}
                         </div>

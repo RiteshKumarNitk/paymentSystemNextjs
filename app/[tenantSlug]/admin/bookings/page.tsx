@@ -67,7 +67,7 @@ export default async function TenantAdminBookingsPage({
                     className={`shrink-0 rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all ${!eventId ? "bg-slate-900 text-white shadow-lg" : "bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300"}`}>
                     All Transactions
                 </Link>
-                {tenant.events.map(e => (
+                {tenant.events.map((e: any) => (
                     <Link key={e.id} href={`/${tenantSlug}/admin/bookings?eventId=${e.id}`}
                         className={`shrink-0 rounded-2xl px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all max-w-[200px] truncate ${eventId === e.id ? "bg-slate-900 text-white shadow-lg" : "bg-white border border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300"}`}>
                         {e.title}

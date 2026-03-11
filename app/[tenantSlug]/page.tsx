@@ -135,7 +135,7 @@ export default async function TenantPublicPage({ params }: { params: Promise<{ t
                             <div className="h-[1px] w-full bg-slate-200"></div>
                         </div>
                         <div className="grid gap-6 sm:grid-cols-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition duration-700">
-                            {pastEvents.map(e => (
+                            {pastEvents.map((e: any) => (
                                 <div key={e.id} className="wowsly-card p-8 !rounded-[2rem]">
                                     <p className="text-[9px] font-black uppercase tracking-widest text-[#F05A44] mb-2">{e.category}</p>
                                     <h4 className="font-bold text-slate-900 text-lg tracking-tight mb-4">{e.title}</h4>

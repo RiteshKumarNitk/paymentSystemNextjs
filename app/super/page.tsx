@@ -64,7 +64,7 @@ export default async function SuperDashboardPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {tenants.map((t) => (
+                        {tenants.map((t: any) => (
                             <tr key={t.id} className="hover:bg-slate-50 transition">
                                 <td className="px-6 py-4">
                                     <p className="font-bold text-slate-900">{t.name}</p>

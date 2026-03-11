@@ -59,7 +59,7 @@ export default async function TenantMemberBookingsPage({
                             <span className="h-[1px] flex-grow mx-6 bg-slate-200/50"></span>
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {notifications.map(n => (
+                            {notifications.map((n: any) => (
                                 <div key={n.id} className="wowsly-card p-6 !rounded-3xl flex gap-4 items-start">
                                     <div className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${n.isRead ? 'bg-slate-200' : 'bg-[#F05A44] shadow-[0_0_8px_rgba(240,90,68,0.5)]'}`}></div>
                                     <div>
@@ -91,7 +91,7 @@ export default async function TenantMemberBookingsPage({
                     </div>
                 ) : (
                     <div className="grid gap-6">
-                        {bookings.map((b) => (
+                        {bookings.map((b: any) => (
                             <div key={b.id} className="wowsly-card p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 group">
                                 <div className="flex gap-6 items-center">
                                     <div className="h-20 w-20 rounded-[2rem] bg-slate-50 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-500">

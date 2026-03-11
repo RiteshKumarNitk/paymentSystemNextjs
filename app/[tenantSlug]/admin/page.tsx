@@ -52,7 +52,7 @@ export default async function TenantAdminDashboardPage({
         revenueMap.set(dateStr, 0);
     }
 
-    recentBookings.forEach(b => {
+    recentBookings.forEach((b: any) => {
         const dateStr = new Date(b.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
         if (revenueMap.has(dateStr)) {
             revenueMap.set(dateStr, revenueMap.get(dateStr) + b.amount);
@@ -60,7 +60,7 @@ export default async function TenantAdminDashboardPage({
     });
 
     const chartData = Array.from(revenueMap.entries())
-        .map(([date, amount]) => ({ date, amount }))
+        .map(([date, amount]: [any, any]) => ({ date, amount }))
         .reverse();
 
     const stats = [
@@ -91,7 +91,7 @@ export default async function TenantAdminDashboardPage({
 
             {/* Modern Bento Stats */}
             <div className="mb-6 grid gap-4 sm:grid-cols-3">
-                {stats.map(s => (
+                {stats.map((s: any) => (
                     <div key={s.label} className="group relative overflow-hidden rounded-3xl bg-white p-7 border border-slate-100 shadow-sm transition-all hover:shadow-lg">
                         <div className={`absolute top-0 right-0 h-16 w-16 translate-x-1/2 -translate-y-1/2 rounded-full ${s.color} opacity-[0.03] transition-transform group-hover:scale-150`}></div>
                         <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">{s.label}</p>
@@ -108,7 +108,7 @@ export default async function TenantAdminDashboardPage({
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Earnings Trend (last 7 days)</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-2xl font-black text-indigo-600">₹{chartData.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()}</p>
+                        <p className="text-2xl font-black text-indigo-600">₹{chartData.reduce((acc: number, curr: any) => acc + curr.amount, 0).toLocaleString()}</p>
                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Period</p>
                     </div>
                 </div>

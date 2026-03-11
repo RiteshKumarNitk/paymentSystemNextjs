@@ -46,7 +46,7 @@ export default function BlogsPage() {
                 </div>
 
                 <div className="mx-auto max-w-7xl grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                    {posts.map(post => (
+                    {posts.map((post: any) => (
                         <div key={post.title} className="wowsly-card p-10 group cursor-pointer hover:border-[#F05A44]/20">
                             <div className="h-20 w-20 rounded-[2rem] bg-slate-100 flex items-center justify-center text-4xl mb-8 group-hover:scale-110 transition-transform duration-500">
                                 {post.image}

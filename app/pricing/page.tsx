@@ -45,7 +45,7 @@ export default function PricingPage() {
                 </div>
 
                 <div className="mx-auto max-w-7xl grid gap-10 md:grid-cols-3">
-                    {plans.map((plan) => (
+                    {plans.map((plan: any) => (
                         <div key={plan.name} className={`wowsly-card p-12 flex flex-col h-full bg-white transition-all ${plan.featured ? 'border-[#F05A44] border-2 shadow-2xl shadow-red-100 -translate-y-4 scale-105' : ''}`}>
                             {plan.featured && (
                                 <span className="self-start px-4 py-1.5 rounded-full bg-[#F05A44] text-white text-[10px] font-black uppercase tracking-widest mb-6">
@@ -62,7 +62,7 @@ export default function PricingPage() {
                             </p>
 
                             <ul className="space-y-4 mb-12 flex-grow">
-                                {plan.features.map(f => (
+                                {plan.features.map((f: string) => (
                                     <li key={f} className="flex items-center gap-3 text-sm font-bold text-slate-600">
                                         <span className="text-[#F05A44]">✓</span> {f}
                                     </li>
