@@ -1,5 +1,5 @@
 {
-  "name": "payment-system-nextjs",
+  "name": "jaipur-fest",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -15,9 +15,11 @@
     "@prisma/client": "^6.4.1",
     "@prisma/extension-accelerate": "^3.0.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.18.0",
     "bcryptjs": "^3.0.3",
     "html5-qrcode": "^2.3.8",
     "next": "^15.2.0",
+    "pg": "^8.20.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

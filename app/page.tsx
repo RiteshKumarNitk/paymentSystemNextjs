@@ -31,10 +31,10 @@ export default async function MarketplacePage() {
               Empowering 50+ Communities
             </div>
             <h1 className="text-6xl lg:text-9xl font-black leading-[0.85] tracking-[-0.05em] mb-12 text-slate-900">
-              Tech for <br /> <span className="text-[#F05A44] italic">Mega</span> <br /> Scale.
+              Jaipur <br /> <span className="text-[#F05A44] italic">Fest</span> <br /> 2026.
             </h1>
             <p className="text-2xl text-slate-600 font-medium max-w-lg leading-relaxed mb-14">
-              Providing all-in-one Event Tech Solutions. Send QR code invites on WhatsApp, E-Ticketing, Fast Check-in, and lot more...
+              The premier destination for the pink city's most iconic celebrations. WhatsApp invites, Fast Check-in, and more...
             </p>
             <div className="flex flex-wrap gap-6">
               <Link href="#explore" className="pill-button pill-button-primary scale-110 !px-12">
@@ -121,7 +121,7 @@ export default async function MarketplacePage() {
 
               <h3 className="text-3xl font-black text-slate-900 mb-4 group-hover:text-[#F05A44] transition-colors">{tenant.name}</h3>
               <p className="text-slate-500 font-medium text-lg mb-12 leading-relaxed min-h-[5rem] line-clamp-3">
-                {tenant.tagline || `Experience curated events and premium hospitality at ${tenant.name}. Organized via EventPass.`}
+                {tenant.tagline || `Experience curated events and premium hospitality at ${tenant.name}. Organized via JaipurFest.`}
               </p>
 
               <div className="flex items-center justify-between pt-10 border-t border-slate-50">

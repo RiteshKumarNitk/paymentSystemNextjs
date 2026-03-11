@@ -37,7 +37,7 @@ export default function SuperLoginPage() {
     return (
         <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
             <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
-                <h1 className="mb-2 text-center text-3xl font-bold text-indigo-600">EventPass Super</h1>
+                <h1 className="mb-2 text-center text-3xl font-bold text-indigo-600">JaipurFest Super</h1>
                 <p className="mb-8 text-center text-slate-500">Global Administration Platform</p>
 
                 {error && (

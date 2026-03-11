@@ -1,4 +1,4 @@
-# UPI QR Payment Collection System
+# JaipurFest
 
 Next.js (App Router) + Prisma + PostgreSQL + UPI QR + TailwindCSS setup for collecting payments and verifying UTR.
 
