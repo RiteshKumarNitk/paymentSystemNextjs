@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import TenantBookingForm from "@/components/tenant/TenantBookingForm";
 
-export const dynamic = "force-dynamic";
+// ISR: Revalidate event detail every 30 seconds (seat count stays reasonably fresh)
+export const revalidate = 30;
+
 
 export default async function TenantEventDetailPage({
     params

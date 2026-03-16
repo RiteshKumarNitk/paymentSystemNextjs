@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { signJWT } from "@/lib/jwt";
+import logger from "@/lib/logger";
 
 export async function POST(request: Request) {
     try {
@@ -25,9 +27,14 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        // Set super_token cookie (Same as ADMIN_PASSWORD for now to match middleware)
+        const token = await signJWT({
+            userId: user.id,
+            email: user.email,
+            role: "SUPER_ADMIN",
+        });
+
         const response = NextResponse.json({ success: true });
-        response.cookies.set("super_token", process.env.ADMIN_PASSWORD || "admin123", {
+        response.cookies.set("super_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
@@ -35,8 +42,11 @@ export async function POST(request: Request) {
             path: "/",
         });
 
+        logger.info({ email: user.email }, "SuperAdmin logged in");
         return response;
     } catch (error) {
+        logger.error(error, "SuperAdmin login error");
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
+

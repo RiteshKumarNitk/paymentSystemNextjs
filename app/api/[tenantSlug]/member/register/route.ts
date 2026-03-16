@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { signJWT } from "@/lib/jwt";
 
 export async function POST(
     request: Request,
@@ -10,7 +11,6 @@ export async function POST(
         const { tenantSlug } = await params;
         const { name, phone, email, password } = await request.json();
 
-        // 1. Fetch Tenant
         const tenant = await prisma.tenant.findUnique({
             where: { slug: tenantSlug },
         });
@@ -23,7 +23,6 @@ export async function POST(
             return NextResponse.json({ error: "All fields are required" }, { status: 400 });
         }
 
-        // 2. Check for duplicate within the SAME tenant
         const existingMember = await prisma.member.findFirst({
             where: {
                 tenantId: tenant.id,
@@ -35,7 +34,6 @@ export async function POST(
             return NextResponse.json({ error: "Email or phone already registered with this organization" }, { status: 400 });
         }
 
-        // 3. Create Member
         const hashedPassword = await bcrypt.hash(password, 10);
         const member = await prisma.member.create({
             data: {
@@ -47,9 +45,15 @@ export async function POST(
             },
         });
 
-        // 4. Auto-login
+        const token = await signJWT({
+            userId: member.id,
+            email: member.email,
+            role: "MEMBER",
+            tenantSlug: tenantSlug
+        });
+
         const response = NextResponse.json({ success: true });
-        response.cookies.set(`member_token_${tenantSlug}`, member.id, {
+        response.cookies.set(`member_token_${tenantSlug}`, token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 24 * 7, // 7 days

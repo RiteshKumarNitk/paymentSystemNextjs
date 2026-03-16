@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/client"
 }
 
 datasource db {
@@ -28,6 +27,8 @@ model Tenant {
   slug        String   @unique
   upiId       String   // Merchant VPA
   upiName     String   // Merchant Name
+  razorpayKeyId     String?  // Razorpay Key ID per tenant
+  razorpayWebhookSecret String? // Razorpay Webhook Secret per tenant
   tagline     String?  // Short bio/motto
   brandColor  String   @default("#4F46E5") // Indigo 600
   logoUrl     String?  // CDN link to logo
@@ -35,11 +36,12 @@ model Tenant {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  users       User[]
-  events      Event[]
-  members     Member[]
-  bookings    Booking[]
+  users         User[]
+  events        Event[]
+  members       Member[]
+  bookings      Booking[]
   notifications Notification[]
+  auditLogs     AuditLog[]
 
   @@index([slug])
 }
@@ -70,6 +72,7 @@ model Event {
   imageUrl    String?
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   tenantId    String
   tenant      Tenant    @relation(fields: [tenantId], references: [id])
@@ -81,20 +84,23 @@ model Event {
 }
 
 model Booking {
-  id        String        @id @default(uuid())
-  orderId   String        @unique
-  name      String
-  phone     String
-  email     String
-  amount    Int
-  utr       String?
-  status    BookingStatus @default(pending)
-  checkedInAt DateTime?
-  createdAt   DateTime      @default(now())
+  id               String        @id @default(uuid())
+  orderId          String        @unique
+  razorpayOrderId  String?       @unique // Razorpay order ID for automated payment
+  razorpayPaymentId String?              // Razorpay payment ID on success
+  name             String
+  phone            String
+  email            String
+  amount           Int
+  utr              String?
+  status           BookingStatus @default(pending)
+  checkedInAt      DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   eventId   String
   event     Event         @relation(fields: [eventId], references: [id])
-  
+
   memberId  String?
   member    Member?       @relation(fields: [memberId], references: [id])
 
@@ -106,6 +112,7 @@ model Booking {
   @@index([memberId])
   @@index([status])
   @@index([createdAt])
+  @@index([razorpayOrderId])
 }
 
 model Member {
@@ -143,4 +150,23 @@ model Notification {
   @@index([memberId])
   @@index([tenantId])
   @@index([isRead])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String   // e.g. "BOOKING_CONFIRMED", "BOOKING_CANCELLED", "TENANT_CREATED"
+  entityType String   // e.g. "Booking", "Tenant"
+  entityId   String   // ID of the affected entity
+  actorId    String?  // User/Member/System that triggered the action
+  actorType  String?  // "SUPER_ADMIN", "TENANT_ADMIN", "MEMBER", "SYSTEM"
+  metadata   Json?    // Additional context (old status, new status, amount, etc.)
+  createdAt  DateTime @default(now())
+
+  tenantId   String?
+  tenant     Tenant?  @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
 }
