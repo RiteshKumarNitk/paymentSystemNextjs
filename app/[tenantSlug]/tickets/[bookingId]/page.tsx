@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import ReactQRCode from "react-qr-code";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,6 @@ export default async function TicketPage({
         orderId: booking.orderId,
         tenant: tenantSlug
     });
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}&color=${brandColor.replace('#', '')}&bgcolor=FFFFFF`;
 
     return (
         <main className="min-h-screen bg-slate-900 px-6 py-12 flex flex-col items-center">
@@ -84,7 +84,12 @@ export default async function TicketPage({
                     <div className="p-8 text-center bg-white border-b-2 border-dashed border-slate-100 relative">
                         {isConfirmed ? (
                             <div className="relative inline-block p-4 rounded-3xl bg-slate-50 border-2 border-slate-100">
-                                <img src={qrUrl} alt="Ticket QR Code" className="h-48 w-48 mx-auto" />
+                                <ReactQRCode 
+                                    value={qrData} 
+                                    size={192} 
+                                    fgColor={brandColor} 
+                                    className="mx-auto" 
+                                />
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
                                     <span className="text-4xl font-black rotate-45">{booking.tenant.name}</span>
                                 </div>

@@ -84,12 +84,17 @@ export default async function TenantAdminEventsPage({
                             </div>
 
                             <div className="flex items-center gap-2 border-t border-slate-50 pt-6">
+                                <Link href={`/${tenantSlug}/admin/events/${e.id}/checkin`}
+                                    className="flex-1 rounded-xl bg-indigo-50 py-3 text-center text-[10px] font-black uppercase tracking-widest text-indigo-600 transition hover:bg-indigo-600 hover:text-white">
+                                    📷 Scan
+                                </Link>
                                 <Link href={`/${tenantSlug}/admin/events/${e.id}/edit`}
-                                    className="flex-1 rounded-xl bg-slate-50 py-3 text-center text-xs font-black text-slate-600 transition hover:bg-slate-100">
-                                    Manage Details
+                                    className="flex-1 rounded-xl bg-slate-50 py-3 text-center text-[10px] font-black uppercase tracking-widest text-slate-600 transition hover:bg-slate-100">
+                                    Manage
                                 </Link>
                                 <Link href={`/${tenantSlug}/events/${e.id}`} target="_blank"
-                                    className="rounded-xl border border-slate-100 p-3 text-slate-400 transition hover:text-indigo-600 hover:bg-indigo-50">
+                                    className="rounded-xl border border-slate-100 p-3 text-slate-400 transition hover:text-indigo-600 hover:bg-indigo-50"
+                                    title="View Public Page">
                                     ↗
                                 </Link>
                             </div>
