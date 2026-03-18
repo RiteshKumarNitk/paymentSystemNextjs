@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import TenantBookingForm from "@/components/tenant/TenantBookingForm";
+import { getLoggedInMemberBySlug } from "@/lib/member";
 
 // ISR: Revalidate event detail every 30 seconds (seat count stays reasonably fresh)
 export const revalidate = 30;
@@ -22,15 +23,22 @@ export default async function TenantEventDetailPage({
         },
         include: {
             tenant: true,
+            ticketTiers: {
+                where: { isActive: true },
+                orderBy: { price: 'asc' }
+            },
             _count: {
                 select: { bookings: { where: { status: "confirmed" } } }
             }
         }
     });
 
+
     if (!event || !event.isActive) {
         return notFound();
     }
+
+    const member = await getLoggedInMemberBySlug(tenantSlug);
 
     const seatsLeft = event.capacity > 0 ? event.capacity - event._count.bookings : null;
     const isSoldOut = seatsLeft !== null && seatsLeft <= 0;
@@ -99,41 +107,34 @@ export default async function TenantEventDetailPage({
                         <div className="sticky top-28 rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-2xl shadow-indigo-100 overflow-hidden relative">
                             <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl"></div>
 
-                            <div className="relative mb-6">
-                                <p className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 mb-2">Gate Pass</p>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-4xl font-black tracking-tighter">
-                                        {event.price === 0 ? "Gratis" : `₹${event.price}`}
-                                    </span>
-                                    {event.price > 0 && <span className="text-sm font-medium text-slate-400">/ person</span>}
-                                </div>
-                            </div>
-
-                            <div className="mb-8 space-y-3">
-                                <div className="flex items-center justify-between text-xs font-bold">
-                                    <span className="text-slate-400 uppercase tracking-widest">Availability</span>
-                                    {isSoldOut ? (
-                                        <span className="text-red-400 bg-red-400/10 px-2 py-0.5 rounded">SOLD OUT</span>
-                                    ) : (
-                                        <span className="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
-                                            {seatsLeft ? `${seatsLeft} LEFT` : "OPEN"}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-indigo-500 transition-all duration-1000"
-                                        style={{ width: isSoldOut ? '100%' : seatsLeft ? `${(event._count.bookings / event.capacity) * 100}%` : '20%' }}
-                                    ></div>
-                                </div>
-                            </div>
-
-                            {!isSoldOut && (
+                            {member ? (
                                 <TenantBookingForm
                                     tenantSlug={tenantSlug}
                                     eventId={event.id}
-                                    price={event.price}
+                                    ticketTiers={event.ticketTiers}
+                                    eventCapacity={event.capacity}
+                                    eventBookings={event._count.bookings}
+                                    isSoldOut={isSoldOut}
+                                    defaultName={member.name}
+                                    defaultEmail={member.email}
+                                    defaultPhone={member.phone}
                                 />
+                            ) : (
+                                <div className="text-center py-6">
+                                    <div className="mb-6 mx-auto w-16 h-16 bg-white/10 rounded-full flex items-center justify-center text-2xl">
+                                        🔒
+                                    </div>
+                                    <h3 className="text-2xl font-black text-white mb-2">Members Only</h3>
+                                    <p className="text-sm font-medium text-slate-400 mb-8 max-w-[200px] mx-auto leading-relaxed">
+                                        You must be a registered member of {event.tenant.name} to secure your tickets.
+                                    </p>
+                                    <Link href={`/${tenantSlug}/member/login`} className="block w-full rounded-2xl bg-indigo-500 py-4 font-black text-white shadow-xl shadow-indigo-500/20 transition hover:bg-indigo-400 text-center">
+                                        Login to Continue →
+                                    </Link>
+                                    <p className="mt-6 text-xs text-slate-500 font-medium">
+                                        Don't have an invite? <Link href={`/${tenantSlug}/member/register`} className="text-white hover:text-indigo-400 transition font-bold">Register here</Link>
+                                    </p>
+                                </div>
                             )}
 
                             <p className="mt-6 text-center text-[10px] text-slate-500 font-medium">

@@ -9,7 +9,12 @@ export async function POST(
 ) {
     try {
         const { tenantSlug } = await params;
-        const { name, phone, email, password } = await request.json();
+        let { name, phone, email, password } = await request.json();
+        
+        // Normalize email to prevent case-sensitivity login bugs
+        if (email) {
+            email = email.trim().toLowerCase();
+        }
 
         const tenant = await prisma.tenant.findUnique({
             where: { slug: tenantSlug },

@@ -25,21 +25,42 @@ export async function POST(
         }
 
         const body = await request.json();
-        const { title, description, date, venue, price, capacity, category, imageUrl, isActive } = body;
+        const { 
+            title, description, startDate, endDate, timezone, 
+            venue, venueAddress, venueMapUrl, visibility, 
+            category, imageUrl, isActive, ticketTiers 
+        } = body;
 
-        // 3. Create Event scoped to Tenant
+        // Fallback for legacy fields
+        const legacyPrice = ticketTiers?.length > 0 ? ticketTiers[0].price : 0;
+        const globalCapacity = ticketTiers?.reduce((acc: number, t: any) => acc + t.capacity, 0) || 0;
+
+        // 3. Create Event scoped to Tenant with nested Ticket Tiers
         const event = await prisma.event.create({
             data: {
                 title,
                 description,
-                date,
+                date: new Date(startDate), // maintain legacy date field compatibility
+                startDate: new Date(startDate),
+                endDate: new Date(endDate),
+                timezone,
                 venue,
-                price,
-                capacity,
+                venueAddress,
+                venueMapUrl,
+                visibility,
+                price: legacyPrice,
+                capacity: globalCapacity,
                 category,
                 imageUrl,
                 isActive,
                 tenantId: tenant.id,
+                ticketTiers: {
+                    create: ticketTiers?.map((t: any) => ({
+                        name: t.name,
+                        price: t.price,
+                        capacity: t.capacity
+                    })) || []
+                }
             },
         });
 

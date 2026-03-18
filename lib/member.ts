@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
+import { verifyJWT } from "./jwt";
 
 /**
  * Server-side helper to read the logged-in member for a specific tenant.
@@ -14,9 +15,12 @@ export async function getLoggedInMember(tenantId: string) {
     const token = cookieStore.get(`member_token_${tenant.slug}`)?.value;
     if (!token) return null;
 
+    const payload = await verifyJWT(token);
+    if (!payload || payload.role !== "MEMBER" || !payload.userId) return null;
+
     return await prisma.member.findFirst({
         where: {
-            id: token,
+            id: payload.userId as string,
             tenantId: tenantId,
         },
     });
@@ -30,10 +34,14 @@ export async function getLoggedInMemberBySlug(slug: string) {
     const token = cookieStore.get(`member_token_${slug}`)?.value;
     if (!token) return null;
 
+    const payload = await verifyJWT(token);
+    if (!payload || payload.role !== "MEMBER" || !payload.userId) return null;
+
     return await prisma.member.findFirst({
         where: {
-            id: token,
+            id: payload.userId as string,
             tenant: { slug: slug },
         },
     });
 }
+

@@ -40,8 +40,8 @@ export default async function MarketplacePage() {
               <Link href="#explore" className="pill-button pill-button-primary scale-110 !px-12">
                 Explore Events
               </Link>
-              <Link href="/pricing" className="pill-button border-2 border-slate-900 text-slate-900 !px-12 hover:bg-slate-900 hover:text-white transition-all scale-110">
-                View Pricing
+              <Link href="/signup" className="pill-button border-2 border-slate-900 text-slate-900 !px-12 hover:bg-slate-900 hover:text-white transition-all scale-110">
+                Create Workspace
               </Link>
             </div>
           </div>

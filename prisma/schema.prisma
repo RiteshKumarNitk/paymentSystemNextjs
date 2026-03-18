@@ -21,6 +21,12 @@ enum UserRole {
   TENANT_ADMIN
 }
 
+enum EventVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
 model Tenant {
   id          String   @id @default(uuid())
   name        String
@@ -64,8 +70,14 @@ model Event {
   id          String    @id @default(uuid())
   title       String
   description String
-  date        DateTime
+  date        DateTime // Legacy: kept for compatibility
+  startDate   DateTime  @default(now())
+  endDate     DateTime  @default(now())
+  timezone    String    @default("Asia/Kolkata")
   venue       String
+  venueAddress String?
+  venueMapUrl String?
+  visibility  EventVisibility @default(PUBLIC)
   price       Int
   capacity    Int       @default(0)
   category    String    @default("general")
@@ -77,11 +89,29 @@ model Event {
   tenantId    String
   tenant      Tenant    @relation(fields: [tenantId], references: [id])
   bookings    Booking[]
+  ticketTiers TicketTier[]
 
   @@index([tenantId])
   @@index([date])
   @@index([isActive])
 }
+
+model TicketTier {
+  id          String   @id @default(uuid())
+  name        String   // e.g. "General Admission", "VIP"
+  price       Int      // Price for this specific tier
+  capacity    Int      @default(0) // 0 means unlimited or managed at event level
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  bookingItems BookingItem[]
+
+  @@index([eventId])
+}
+
 
 model Booking {
   id               String        @id @default(uuid())
@@ -100,6 +130,7 @@ model Booking {
 
   eventId   String
   event     Event         @relation(fields: [eventId], references: [id])
+  items     BookingItem[]
 
   memberId  String?
   member    Member?       @relation(fields: [memberId], references: [id])
@@ -113,6 +144,21 @@ model Booking {
   @@index([status])
   @@index([createdAt])
   @@index([razorpayOrderId])
+}
+
+model BookingItem {
+  id           String     @id @default(uuid())
+  quantity     Int
+  price        Int        // Snapshot of the price at the time of booking
+
+  bookingId    String
+  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  
+  ticketTierId String
+  ticketTier   TicketTier @relation(fields: [ticketTierId], references: [id])
+
+  @@index([bookingId])
+  @@index([ticketTierId])
 }
 
 model Member {
