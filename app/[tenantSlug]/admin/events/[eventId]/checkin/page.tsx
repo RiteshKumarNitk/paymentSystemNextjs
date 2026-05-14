@@ -11,6 +11,8 @@ export default function EventCheckInPage() {
     const eventId = params.eventId as string;
 
     const [isScanning, setIsScanning] = useState(true);
+    const [manualId, setManualId] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [scanResult, setScanResult] = useState<{
         success: boolean;
         message: string;
@@ -93,6 +95,55 @@ export default function EventCheckInPage() {
         setTimeout(() => {
             setScanResult(null);
             setIsScanning(true);
+            setIsSubmitting(false);
+        }, 3000);
+    };
+
+    const handleManualSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!manualId.trim() || isSubmitting) return;
+
+        setIsScanning(false);
+        setIsSubmitting(true);
+        setScanResult(null);
+
+        try {
+            const response = await fetch(`/api/${tenantSlug}/admin/events/${eventId}/checkin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bookingId: manualId.trim() })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setScanResult({
+                    success: true,
+                    message: `✅ Access Granted: ${result.name}`,
+                    details: result.tickets
+                });
+                playBeep(800, 200);
+                setManualId(""); // Clear on success
+            } else {
+                setScanResult({
+                    success: false,
+                    message: `❌ Access Denied`,
+                    details: result.error || "Invalid Ticket"
+                });
+                playBeep(200, 500);
+            }
+        } catch (error) {
+            setScanResult({
+                success: false,
+                message: "Network Error",
+                details: "Please try again."
+            });
+        }
+
+        setTimeout(() => {
+            setScanResult(null);
+            setIsScanning(true);
+            setIsSubmitting(false);
         }, 3000);
     };
 
@@ -173,6 +224,26 @@ export default function EventCheckInPage() {
                         )}
                     </div>
                     <p className="text-sm text-slate-400 font-medium">Point your camera at the attendee's digital ticket. The system will automatically scan and verify the QR code.</p>
+                </div>
+
+                <div className="w-full max-w-md mt-4 bg-slate-800/50 border border-slate-700/50 p-6 rounded-3xl">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Manual Entry Fallback</h3>
+                    <form onSubmit={handleManualSubmit} className="flex gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="Type Order ID (e.g., EP-XYZ123)"
+                            value={manualId}
+                            onChange={(e) => setManualId(e.target.value)}
+                            className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-sm font-medium text-white focus:outline-none focus:border-[#F05A44]"
+                        />
+                        <button 
+                            type="submit"
+                            disabled={isSubmitting || !manualId.trim()}
+                            className="bg-[#F05A44] hover:bg-[#d04935] disabled:bg-slate-700 text-white font-black text-xs uppercase tracking-widest px-5 rounded-2xl transition"
+                        >
+                            Verify
+                        </button>
+                    </form>
                 </div>
             </div>
         </main>

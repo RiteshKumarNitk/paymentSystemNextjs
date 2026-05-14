@@ -33,9 +33,12 @@ export async function POST(
         // 3. Find and validate booking
         const booking = await prisma.booking.findFirst({
             where: {
-                id: bookingId,
                 eventId: eventId,
-                tenant: { slug: tenantSlug }
+                tenant: { slug: tenantSlug },
+                OR: [
+                    { id: bookingId },
+                    { orderId: bookingId }
+                ]
             },
             include: { items: { include: { ticketTier: true } } }
         });

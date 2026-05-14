@@ -16,17 +16,27 @@ export default async function TenantAdminEventsPage({
         where: { slug: tenantSlug },
         include: {
             events: {
-                include: {
-                    _count: {
-                        select: { bookings: { where: { status: "confirmed" } } }
-                    }
-                },
                 orderBy: { date: "desc" },
+                include: {
+                    bookings: {
+                        where: { status: "confirmed" },
+                        include: { items: true }
+                    }
+                }
             }
         }
     });
 
     if (!tenant) return notFound();
+
+    // Compute sums manually because Prisma aggregates inside nested includes are limited
+    const eventsWithSums = tenant.events.map((e: any) => {
+        const totalBooked = e.bookings.reduce((sum: number, b: any) => {
+            const itemSum = b.items.reduce((iSum: number, item: any) => iSum + item.quantity, 0);
+            return sum + itemSum;
+        }, 0);
+        return { ...e, totalBooked };
+    });
 
     return (
         <main className="mx-auto min-h-screen max-w-6xl px-4 py-8">
@@ -51,7 +61,7 @@ export default async function TenantAdminEventsPage({
                         <h3 className="text-xl font-bold text-slate-900">No events yet</h3>
                         <p className="text-slate-400 font-medium mt-1">Start your journey by creating your first event.</p>
                     </div>
-                ) : (tenant.events as Array<any>).map((e: any) => (
+                ) : (eventsWithSums).map((e: any) => (
                     <div key={e.id} className="group overflow-hidden rounded-[2.5rem] bg-white shadow-sm border border-slate-100 transition-all hover:shadow-2xl">
                         <div className="aspect-[16/9] w-full bg-slate-100 relative">
                             {e.imageUrl ? (
@@ -80,7 +90,7 @@ export default async function TenantAdminEventsPage({
                             <div className="mb-6 space-y-1 text-xs font-bold text-slate-400 uppercase tracking-tighter">
                                 <p>📅 {new Date(e.date).toLocaleDateString()}</p>
                                 <p>📍 {e.venue}</p>
-                                <p className="text-indigo-600 mt-2">✨ {e._count.bookings} / {e.capacity || "∞"} Booked</p>
+                                <p className="text-indigo-600 mt-2">✨ {e.totalBooked} / {e.capacity || "∞"} Booked</p>
                             </div>
 
                             <div className="flex items-center gap-2 border-t border-slate-50 pt-6">

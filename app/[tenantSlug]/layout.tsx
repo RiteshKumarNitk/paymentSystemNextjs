@@ -38,7 +38,7 @@ export default async function TenantLayout({ children, params }: Context) {
                     </Link>
 
                     <nav className="flex items-center gap-6">
-                        <Link href={`/${tenantSlug}/admin/login`} className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition">Admin</Link>
+                        <Link href={`/${tenantSlug}/about`} className="text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition">About</Link>
                         <Link href={`/${tenantSlug}/member/login`} className="rounded-xl border border-slate-100 bg-white px-5 py-2.5 text-xs font-black uppercase tracking-widest text-slate-900 hover:bg-slate-50 transition shadow-sm">
                             Member Hub
                         </Link>
@@ -48,8 +48,29 @@ export default async function TenantLayout({ children, params }: Context) {
 
             {children}
 
-            <footer className="border-t border-slate-100 py-12 px-6 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Powered by EventPass Platform</p>
+            <footer className="border-t border-slate-100 py-16 px-6 bg-slate-50">
+                <div className="mx-auto max-w-7xl grid gap-8 sm:grid-cols-2 lg:grid-cols-3 text-left">
+                    <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4">{tenant.name}</h4>
+                        <p className="text-sm font-medium text-slate-400 leading-relaxed">Discover incredible experiences and book your tickets securely online.</p>
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Navigation</h4>
+                        <ul className="space-y-2 text-sm font-bold text-slate-600">
+                            <li><Link href={`/${tenantSlug}`} className="hover:text-[var(--brand-color)] transition">Events</Link></li>
+                            <li><Link href={`/${tenantSlug}/about`} className="hover:text-[var(--brand-color)] transition">About & Contact</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Organizers</h4>
+                        <Link href={`/${tenantSlug}/admin/login`} className="text-xs font-bold text-slate-500 hover:text-[var(--brand-color)] transition">
+                            🔐 Organizer Portal Access
+                        </Link>
+                    </div>
+                </div>
+                <div className="mt-12 pt-8 border-t border-slate-200/60 text-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Powered by EventPass Platform</p>
+                </div>
             </footer>
         </div>
     );

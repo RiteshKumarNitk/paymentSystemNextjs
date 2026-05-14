@@ -43,11 +43,22 @@ export async function POST(
             return NextResponse.json({ error: "Event not found" }, { status: 404 });
         }
 
+        const soldTicketsAggr = await prisma.bookingItem.aggregate({
+            _sum: { quantity: true },
+            where: {
+                booking: {
+                    eventId: eventId,
+                    status: "confirmed"
+                }
+            }
+        });
+        const totalBookings = soldTicketsAggr._sum.quantity || 0;
+
         // Calculate total requested tickets
         const totalRequestedTickets = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
 
         // 4. Check Global Capacity
-        if (event.capacity > 0 && (event._count.bookings + totalRequestedTickets) > event.capacity) {
+        if (event.capacity > 0 && (totalBookings + totalRequestedTickets) > event.capacity) {
             return NextResponse.json({ error: "Not enough total capacity left for this event." }, { status: 400 });
         }
 

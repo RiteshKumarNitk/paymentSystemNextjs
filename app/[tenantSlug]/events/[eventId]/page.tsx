@@ -40,7 +40,18 @@ export default async function TenantEventDetailPage({
 
     const member = await getLoggedInMemberBySlug(tenantSlug);
 
-    const seatsLeft = event.capacity > 0 ? event.capacity - event._count.bookings : null;
+    const soldTicketsAggr = await prisma.bookingItem.aggregate({
+        _sum: { quantity: true },
+        where: {
+            booking: {
+                eventId: eventId,
+                status: "confirmed"
+            }
+        }
+    });
+    const totalBookings = soldTicketsAggr._sum.quantity || 0;
+
+    const seatsLeft = event.capacity > 0 ? event.capacity - totalBookings : null;
     const isSoldOut = seatsLeft !== null && seatsLeft <= 0;
 
     return (
@@ -113,7 +124,7 @@ export default async function TenantEventDetailPage({
                                     eventId={event.id}
                                     ticketTiers={event.ticketTiers}
                                     eventCapacity={event.capacity}
-                                    eventBookings={event._count.bookings}
+                                    eventBookings={totalBookings}
                                     isSoldOut={isSoldOut}
                                     defaultName={member.name}
                                     defaultEmail={member.email}
